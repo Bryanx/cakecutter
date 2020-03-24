@@ -1,5 +1,5 @@
 # CakeCutter
-A tiny annotation library for injecting styledAttributes into custom views.
+A tiny annotation library for injecting styled attributes into custom views.
 
 ## Example
 Traditional way of loading styled attributes:
