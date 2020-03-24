@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomView">
+        <attr name="view_text" format="string"/>
+        <attr name="view_textSize" format="dimension"/>
+        <attr name="view_padding" format="integer"/>
+        <attr name="view_visible" format="boolean"/>
+    </declare-styleable>
+</resources>
