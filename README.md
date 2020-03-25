@@ -35,7 +35,7 @@ class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(c
 }
 ```
 
-With this annotation the props can have different names than the styleables.
+Alternative: `(With this annotation the props can have different names than the styleables.)`
 ```kotlin
 class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(ctx, attrs) {
     @BindStyleable(R.styleable.CustomView_customText) var text: String = ""
