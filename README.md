@@ -42,10 +42,10 @@ Some advantages:
 * Less boilerplate.
 
 Alternative annotation:
-With this annotation the props can have different names than the styleables.
 ```kotlin
 @BindStyleable(R.styleable.CustomView_customText) var text: String = ""
 ```
+With this annotation the props can have different names than the styleables.
 
 ## Note
 This project is more of an expirement/study on annotation libraries and [ButterKnife](https://github.com/JakeWharton/butterknife).
