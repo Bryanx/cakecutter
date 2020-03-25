@@ -1,4 +1,4 @@
-# CakeCutter
+# 🍰 CakeCutter
 A tiny annotation library for injecting styled attributes into custom views.
 
 ## Example
@@ -34,21 +34,37 @@ class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(c
     }
 }
 ```
-The styleables are bound by property name, the default values are the intial values of the properties.
+The styleables are bound by property name.
+
+Some advantages:
+* Default values are assigned once instead of twice.
+* Layout/programmatic setters are combined.
+* Less boilerplate.
 
 Alternative annotation:
-With this annotation the props can have different names than the styleables.
 ```kotlin
-class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(ctx, attrs) {
-    @BindStyleable(R.styleable.CustomView_customText) var text: String = ""
-    @BindStyleable(R.styleable.CustomView_customNumber) var number: Float = 0F
-    @BindStyleable(R.styleable.CustomView_customSize) var size: Int = 0
+@BindStyleable(R.styleable.CustomView_customText) var otherTextName: String = ""
+```
+With this annotation the props can have different names than the styleables.
 
-    init {
-        CakeCutter.bind(this)
-    }
+
+## Generated code
+It works similarly to Dagger and ButterKnife, here is the generated code for above example:
+```kotlin
+fun bind(view: CustomView) {
+  view.context.obtainStyledAttributes(view.attrs, R.styleable.CustomView)
+    .apply {
+      try {
+        view.customText = getBoolean(6, view.customText)
+        view.customNumber = getString(R.styleable.CustomView_customNumber) ?: view.customNumber
+        view.customSize = getDimension(R.styleable.CustomView_customSize, view.customSize)
+      } finally {
+        recycle()
+      }
+  }
 }
 ```
+
 
 ## Note
 This project is more of an expirement/study on annotation libraries and [ButterKnife](https://github.com/JakeWharton/butterknife).
