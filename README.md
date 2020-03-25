@@ -48,8 +48,7 @@ class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(c
 }
 ```
 
-<br>
-
+## Note
 This project is more of an expirement/study on annotation libraries and [ButterKnife](https://github.com/JakeWharton/butterknife).
 
 <br>
