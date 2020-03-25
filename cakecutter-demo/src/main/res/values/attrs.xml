@@ -5,7 +5,6 @@
         <attr name="viewTextSize" format="dimension"/>
         <attr name="viewPadding" format="integer"/>
         <attr name="viewVisible" format="boolean"/>
-        <attr name="viewIntArray" format="reference"/>
         <attr name="viewColor" format="color"/>
         <attr name="viewPosition" format="enum">
             <enum name="left" value="0"/>
