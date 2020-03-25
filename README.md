@@ -34,6 +34,7 @@ class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(c
     }
 }
 ```
+The styleables are bound by property name, the default values are the intial values of the properties.
 
 Alternative: `(With this annotation the props can have different names than the styleables.)`
 ```kotlin
