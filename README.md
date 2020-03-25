@@ -1,4 +1,4 @@
-# CakeCutter 🍰
+# 🍰 CakeCutter
 A tiny annotation library for injecting styled attributes into custom views.
 
 ## Example
