@@ -29,7 +29,7 @@ ext {
 }
 
 // thanks to nuuneoi and wajahatkarim3 :)
-//if (project.rootProject.file('local.properties').exists()) {
-//    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/install.gradle'
-//    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/bintray.gradle'
-//}
+if (project.rootProject.file('local.properties').exists()) {
+    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/install.gradle'
+    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/bintray.gradle'
+}

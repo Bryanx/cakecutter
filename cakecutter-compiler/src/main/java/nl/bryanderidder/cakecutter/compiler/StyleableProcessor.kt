@@ -16,6 +16,7 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeKind
 import javax.lang.model.type.TypeKind.*
+import javax.lang.model.type.TypeMirror
 
 @AutoService(Processor::class)
 class StyleableProcessor : AbstractProcessor() {
@@ -72,8 +73,9 @@ class StyleableProcessor : AbstractProcessor() {
             addStatement("  .apply {")
             addStatement("    try {")
             injections?.forEach { point: InjectionPoint ->
-                if (point.styleId == null) addStatement("      ${fetchStyleableWithoutId(point, className)}")
-                else addStatement("      ${fetchStyleableWithId(point)}")
+                val id = if (point.styleId != null) "${point.styleId}"
+                else "R.styleable.${className}_${point.variableName}"
+                addStatement("      ${fetchStyleable(point, id, point.type.toString())}")
             }
             addStatement("    } finally {")
             addStatement("      recycle()")
@@ -82,28 +84,24 @@ class StyleableProcessor : AbstractProcessor() {
             }.build()
     }
 
-    // for each injection point (each annotation) fetch its attribute
-    private fun fetchStyleableWithoutId(
+    // for each injection point (each annotation) fetch its attribute without style id.
+    private fun fetchStyleable(
         point: InjectionPoint,
-        className: String
-    ): String =
-        when (point.type) {
-            DECLARED -> "view.${point.variableName} = getString(R.styleable.${className}_${point.variableName}) ?: view.${point.variableName}"
-            FLOAT -> "view.${point.variableName} = getDimension(R.styleable.${className}_${point.variableName}, view.${point.variableName})"
-            INT -> "view.${point.variableName} = getInt(R.styleable.${className}_${point.variableName}, view.${point.variableName})"
-            BOOLEAN -> "view.${point.variableName} = getBoolean(R.styleable.${className}_${point.variableName}, view.${point.variableName})"
+        id: String,
+        type: String
+    ): String {
+        return when (point.type.kind) {
+            DECLARED -> {
+                if (type.contains("String")) "view.${point.variableName} = getString($id) ?: view.${point.variableName}"
+                else "view.${point.variableName} = $type.values()[getInteger($id, view.${point.variableName}.ordinal)]"
+            }
+            FLOAT -> "view.${point.variableName} = getDimension($id, view.${point.variableName})"
+            INT -> "view.${point.variableName} = getInt($id, view.${point.variableName})"
+            BOOLEAN -> "view.${point.variableName} = getBoolean($id, view.${point.variableName})"
+            ARRAY -> "view.${point.variableName} = getTextArray($id) ?: view.${point.variableName}"
             else -> ""
         }
-
-    // for each injection point (each annotation) fetch its attribute
-    private fun fetchStyleableWithId(point: InjectionPoint): String =
-        when (point.type) {
-            DECLARED -> "view.${point.variableName} = getString(${point.styleId}) ?: view.${point.variableName}"
-            FLOAT -> "view.${point.variableName} = getDimension(${point.styleId}, view.${point.variableName})"
-            INT -> "view.${point.variableName} = getInt(${point.styleId}, view.${point.variableName})"
-            BOOLEAN -> "view.${point.variableName} = getBoolean(${point.styleId}, view.${point.variableName})"
-            else -> ""
-        }
+    }
 
     // for each annotated field, get the variable name, type and styleId
     private fun processAnnotation(
@@ -111,7 +109,7 @@ class StyleableProcessor : AbstractProcessor() {
         classWithInjections: MutableMap<TypeElement, MutableSet<InjectionPoint>>
     ) {
         val variableName = element.simpleName.toString()
-        val type = element.asType().kind
+        val type = element.asType()
         val classElement = element.enclosingElement as TypeElement
         var styleId: Int? = null
         try {
@@ -129,7 +127,7 @@ class StyleableProcessor : AbstractProcessor() {
 
     private class InjectionPoint internal constructor(
         val variableName: String,
-        val type: TypeKind,
+        val type: TypeMirror,
         val styleId: Int?
     )
 
