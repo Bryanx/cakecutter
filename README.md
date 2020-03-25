@@ -16,7 +16,7 @@ class CustomView(ctx: Context, attrs: AttributeSet) : FrameLayout(ctx, attrs) {
             number = styledAttrs.getInt(R.styleable.CustomView_customNumber, number)
             size = styledAttrs.getDimension(R.styleable.CustomView_customSize, size)
         } finally {
-          styledAttrs.recycle()
+            styledAttrs.recycle()
         }
     }
 }
@@ -68,6 +68,10 @@ fun bind(view: CustomView) {
 
 ## Note
 This project is more of an expirement/study on annotation libraries and [ButterKnife](https://github.com/JakeWharton/butterknife).
+
+At the moment this library does not support these custom attribute types:
+* Fraction types
+* Multi types
 
 <br>
 <br>
