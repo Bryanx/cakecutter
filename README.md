@@ -34,7 +34,7 @@ class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(c
     }
 }
 ```
-The styleables are bound by property name, the default values are the intial values of the properties.
+The styleables are bound by property name.
 
 Some advantages:
 * Default values are assigned once instead of twice.
