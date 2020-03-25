@@ -38,8 +38,8 @@ The styleables are bound by property name, the default values are the intial val
 
 Some advantages:
 * Default values are assigned once instead of twice.
-* Setters for layout/programmtic interactions are combined
-* Less boilerplate
+* Layout/programmatic setters are combined.
+* Less boilerplate.
 
 Alternative annotation:
 With this annotation the props can have different names than the styleables.
