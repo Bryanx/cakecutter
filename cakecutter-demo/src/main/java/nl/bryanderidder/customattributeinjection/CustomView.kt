@@ -2,8 +2,10 @@ package nl.bryanderidder.customattributeinjection
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import nl.bryanderidder.cakecutter.annotations.BindStyleable
 import nl.bryanderidder.cakecutter.annotations.Styleable
 
@@ -19,8 +21,9 @@ class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(c
     @Styleable var viewTextSize: Float = 30f
     @Styleable var viewPadding: Int = 30
     @Styleable var viewPosition: PositionEnum = PositionEnum.LEFT
+    @Styleable var viewColor: Int = ContextCompat.getColor(ctx, android.R.color.white)
         set(value) {
-            tvText.setText(value.toString())
+            tvText.setTextColor(value)
             field = value
         }
     // this attribute allows you to use a different field name than the styleable.
