@@ -1,4 +1,4 @@
 rootProject.name='cakecutter'
 include ':cakecutter-demo'
-include ':cakecutter-processor'
+include ':cakecutter-compiler'
 include ':cakecutter-annotations'

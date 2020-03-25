@@ -3,8 +3,8 @@ package nl.bryanderidder.customattributeinjection
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import android.widget.TextView
-import nl.bryanderidder.annotations.BindStyleable
+import nl.bryanderidder.cakecutter.annotations.BindStyleable
+import nl.bryanderidder.cakecutter.annotations.Styleable
 
 
 /**
@@ -13,39 +13,13 @@ import nl.bryanderidder.annotations.BindStyleable
  * @author Bryan de Ridder
  */
 class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(ctx, attrs) {
-
-    val tvText: TextView = TextView(ctx)
-
-    @BindStyleable(R.styleable.CustomView_view_text)
-    var text: String = ""
-        set(value) {
-            field = value
-            tvText.text = value
-        }
-
-    @BindStyleable(R.styleable.CustomView_view_textSize)
-    var textSize: Float = 30f
-        set(value) {
-            field = value
-            tvText.textSize = value
-        }
-
-    @BindStyleable(R.styleable.CustomView_view_padding)
-    var textPadding: Int = 30
-        set(value) {
-            field = value
-            tvText.setPadding(value, value, value, value)
-        }
-
-    @BindStyleable(R.styleable.CustomView_view_visible)
-    var textVisibility: Boolean = true
-        set(value) {
-            field = value
-            tvText.visibility = if (value) VISIBLE else GONE
-        }
+    @Styleable var viewText: String = ""
+    @Styleable var viewTextSize: Float = 30f
+    @Styleable var viewPadding: Int = 30
+    // this attribute allows you to use a different field name than the styleable.
+    @BindStyleable(styleableId = R.styleable.CustomView_viewVisible) var visible: Boolean = true
 
     init {
-        addView(tvText)
         CakeCutter.bind(this)
     }
 }

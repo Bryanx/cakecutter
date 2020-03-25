@@ -1,11 +1,12 @@
-package nl.bryanderidder.aprocessor
+package nl.bryanderidder.cakecutter.compiler
 
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
-import nl.bryanderidder.annotations.BindStyleable
+import nl.bryanderidder.cakecutter.annotations.BindStyleable
+import nl.bryanderidder.cakecutter.annotations.Styleable
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
@@ -17,10 +18,10 @@ import javax.lang.model.type.TypeKind
 import javax.lang.model.type.TypeKind.*
 
 @AutoService(Processor::class)
-class AnnotationProcessor : AbstractProcessor() {
+class StyleableProcessor : AbstractProcessor() {
 
     override fun getSupportedAnnotationTypes(): MutableSet<String>
-            = mutableSetOf(BindStyleable::class.java.name)
+            = mutableSetOf(Styleable::class.java.name, BindStyleable::class.java.name)
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
@@ -29,7 +30,7 @@ class AnnotationProcessor : AbstractProcessor() {
         roundEnv: RoundEnvironment
     ): Boolean {
         // All annotations enter here from all classes.
-        // Create a map of <Class,Set<Annotations>>
+        // Create a map of <Class,Set<Props>>
         val injections: MutableMap<TypeElement, MutableSet<InjectionPoint>> = mutableMapOf()
         // Fill the map with classes and their annotations
         annotations?.flatMap { roundEnv.getElementsAnnotatedWith(it) }
@@ -44,7 +45,9 @@ class AnnotationProcessor : AbstractProcessor() {
             objectBuilder.addFunction(generateBindFunction(it, injections[it]))
         }
         // Generate a single file
-        val file = FileSpec.builder(packageName, OBJECT_NAME)
+        val file = FileSpec.builder(packageName,
+                OBJECT_NAME
+            )
             .addType(objectBuilder.build())
             .build()
         // Put files in generated directory
@@ -58,25 +61,47 @@ class AnnotationProcessor : AbstractProcessor() {
     // Get the styled attributes
     // Set all initial values from the styled attrs.
     // Recycle the styled attrs.
-    private fun generateBindFunction(classElement: TypeElement, injections: MutableSet<InjectionPoint>?): FunSpec {
+    private fun generateBindFunction(
+        classElement: TypeElement,
+        injections: MutableSet<InjectionPoint>?
+    ): FunSpec {
         val className = classElement.simpleName.toString()
-        val bind = FunSpec.builder(BIND)
-            .addParameter("view", classElement.asType().asTypeName())
-            .addStatement("val styledAttrs = view.context.obtainStyledAttributes(view.attrs, R.styleable.$className)")
-        injections?.forEach { point: InjectionPoint ->
-            bind.addStatement(createStatementForAttr(point))
-        }
-        bind.addStatement("styledAttrs.recycle()")
-        return bind.build()
+        return FunSpec.builder(BIND).apply {
+            addParameter("view", classElement.asType().asTypeName())
+            addStatement("view.context.obtainStyledAttributes(view.attrs, R.styleable.$className)")
+            addStatement("  .apply {")
+            addStatement("    try {")
+            injections?.forEach { point: InjectionPoint ->
+                if (point.styleId == null) addStatement("      ${fetchStyleableWithoutId(point, className)}")
+                else addStatement("      ${fetchStyleableWithId(point)}")
+            }
+            addStatement("    } finally {")
+            addStatement("      recycle()")
+            addStatement("    }")
+            addStatement("}")
+            }.build()
     }
 
     // for each injection point (each annotation) fetch its attribute
-    private fun createStatementForAttr(point: InjectionPoint): String =
+    private fun fetchStyleableWithoutId(
+        point: InjectionPoint,
+        className: String
+    ): String =
         when (point.type) {
-            DECLARED -> "view.${point.variableName} = styledAttrs.getString(${point.styleId}) ?: view.${point.variableName}"
-            FLOAT -> "view.${point.variableName} = styledAttrs.getDimension(${point.styleId}, view.${point.variableName})"
-            INT -> "view.${point.variableName} = styledAttrs.getInt(${point.styleId}, view.${point.variableName})"
-            BOOLEAN -> "view.${point.variableName} = styledAttrs.getBoolean(${point.styleId}, view.${point.variableName})"
+            DECLARED -> "view.${point.variableName} = getString(R.styleable.${className}_${point.variableName}) ?: view.${point.variableName}"
+            FLOAT -> "view.${point.variableName} = getDimension(R.styleable.${className}_${point.variableName}, view.${point.variableName})"
+            INT -> "view.${point.variableName} = getInt(R.styleable.${className}_${point.variableName}, view.${point.variableName})"
+            BOOLEAN -> "view.${point.variableName} = getBoolean(R.styleable.${className}_${point.variableName}, view.${point.variableName})"
+            else -> ""
+        }
+
+    // for each injection point (each annotation) fetch its attribute
+    private fun fetchStyleableWithId(point: InjectionPoint): String =
+        when (point.type) {
+            DECLARED -> "view.${point.variableName} = getString(${point.styleId}) ?: view.${point.variableName}"
+            FLOAT -> "view.${point.variableName} = getDimension(${point.styleId}, view.${point.variableName})"
+            INT -> "view.${point.variableName} = getInt(${point.styleId}, view.${point.variableName})"
+            BOOLEAN -> "view.${point.variableName} = getBoolean(${point.styleId}, view.${point.variableName})"
             else -> ""
         }
 
@@ -88,15 +113,24 @@ class AnnotationProcessor : AbstractProcessor() {
         val variableName = element.simpleName.toString()
         val type = element.asType().kind
         val classElement = element.enclosingElement as TypeElement
-        val styleId = element.getAnnotation(BindStyleable::class.java).value
+        var styleId: Int? = null
+        try {
+            styleId = element.getAnnotation(BindStyleable::class.java).styleableId
+        } catch (e: Exception) { /* annotation not found. */}
         classWithInjections.putIfAbsent(classElement, mutableSetOf())
-        classWithInjections[classElement]?.add(InjectionPoint(variableName, type, styleId))
+        classWithInjections[classElement]?.add(
+            InjectionPoint(
+                variableName,
+                type,
+                styleId
+            )
+        )
     }
 
     private class InjectionPoint internal constructor(
         val variableName: String,
         val type: TypeKind,
-        val styleId: Int
+        val styleId: Int?
     )
 
     companion object {

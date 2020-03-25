@@ -12,7 +12,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:background="@color/colorAccent"
-        app:view_text="test"
-        app:view_padding="0"/>
+        app:viewText="test"
+        app:viewPadding="0"/>
 
 </LinearLayout>
