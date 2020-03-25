@@ -44,15 +44,7 @@ Some advantages:
 Alternative annotation:
 With this annotation the props can have different names than the styleables.
 ```kotlin
-class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(ctx, attrs) {
-    @BindStyleable(R.styleable.CustomView_customText) var text: String = ""
-    @BindStyleable(R.styleable.CustomView_customNumber) var number: Float = 0F
-    @BindStyleable(R.styleable.CustomView_customSize) var size: Int = 0
-
-    init {
-        CakeCutter.bind(this)
-    }
-}
+@BindStyleable(R.styleable.CustomView_customText) var text: String = ""
 ```
 
 ## Note
