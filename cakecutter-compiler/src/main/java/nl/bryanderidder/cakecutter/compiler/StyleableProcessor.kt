@@ -1,10 +1,6 @@
 package nl.bryanderidder.cakecutter.compiler
 
 import com.google.auto.service.AutoService
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
 import nl.bryanderidder.cakecutter.annotations.BindStyleable
 import nl.bryanderidder.cakecutter.annotations.Styleable
 import java.io.File
@@ -14,9 +10,9 @@ import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
-import javax.lang.model.type.TypeKind
 import javax.lang.model.type.TypeKind.*
 import javax.lang.model.type.TypeMirror
+
 
 @AutoService(Processor::class)
 class StyleableProcessor : AbstractProcessor() {
@@ -38,24 +34,22 @@ class StyleableProcessor : AbstractProcessor() {
             ?.forEach { processAnnotation(it, injections) }
 
         if (injections.isEmpty()) return false
-        val packageName = injections.keys.first().toString().replaceAfterLast(".", "")
-        // generate a single object
-        val objectBuilder = TypeSpec.objectBuilder(OBJECT_NAME)
+        val packageName = injections.keys.first().toString().replaceAfterLast(".", "").dropLastWhile { it == '.' }
+        val content = StringBuilder()
         // fill the object with bind functions for each view
         injections.keys.forEach {
-            objectBuilder.addFunction(generateBindFunction(it, injections[it]))
+            content.appendln(generateBindFunction(it, injections[it]))
         }
-        // Generate a single file
-        val file = FileSpec.builder(packageName,
-                OBJECT_NAME
-            )
-            .addType(objectBuilder.build())
-            .build()
         // Put files in generated directory
-        val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
-        file.writeTo(File(kaptKotlinGeneratedDir))
-
+        generateFile(packageName, content.toString())
         return false
+    }
+
+    private fun generateFile(pack: String, content: String) {
+        val fileContent = String.format(OBJECT_FILE, pack, content).trimIndent()
+        val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
+        val file = File(kaptKotlinGeneratedDir, "$OBJECT_NAME.kt")
+        file.writeText(fileContent)
     }
 
     // Generate a function
@@ -65,23 +59,24 @@ class StyleableProcessor : AbstractProcessor() {
     private fun generateBindFunction(
         classElement: TypeElement,
         injections: MutableSet<InjectionPoint>?
-    ): FunSpec {
+    ): String {
         val className = classElement.simpleName.toString()
-        return FunSpec.builder(BIND).apply {
-            addParameter("view", classElement.asType().asTypeName())
-            addStatement("view.context.obtainStyledAttributes(view.attrs, R.styleable.$className)")
-            addStatement("  .apply {")
-            addStatement("    try {")
-            injections?.forEach { point: InjectionPoint ->
-                val id = if (point.styleId != null) "R.styleable.${className}_${point.styleId}"
-                else "R.styleable.${className}_${point.variableName}"
-                addStatement("      ${fetchStyleable(point, id, point.type.toString())}")
-            }
-            addStatement("    } finally {")
-            addStatement("      recycle()")
-            addStatement("    }")
-            addStatement("}")
-            }.build()
+        val func = StringBuilder()
+        func.appendln("fun $BIND(view: $classElement) {")
+        func.appendln("    view.context.obtainStyledAttributes(view.attrs, R.styleable.$className)")
+        func.appendln("    .apply {")
+        func.appendln("      try {")
+        injections?.forEach { point: InjectionPoint ->
+            val id = if (point.styleId != null) "R.styleable.${className}_${point.styleId}"
+            else "R.styleable.${className}_${point.variableName}"
+            func.appendln("        ${fetchStyleable(point, id, point.type.toString())}")
+        }
+        func.appendln("      } finally {")
+        func.appendln("        recycle()")
+        func.appendln("      }")
+        func.appendln("    }")
+        func.append("  }")
+        return func.toString()
     }
 
     // for each injection point (each annotation) fetch its attribute without style id.
@@ -135,5 +130,12 @@ class StyleableProcessor : AbstractProcessor() {
         const val OBJECT_NAME = "CakeCutter"
         const val BIND = "bind"
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
+        const val OBJECT_FILE =
+"""
+package %s
+
+object $OBJECT_NAME {
+  %s}
+"""
     }
 }
