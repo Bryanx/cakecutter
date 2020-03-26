@@ -12,9 +12,9 @@ class CustomView(ctx: Context, attrs: AttributeSet) : FrameLayout(ctx, attrs) {
     init {
         val styledAttrs = ctx.obtainStyledAttributes(attrs, R.styleable.CustomView)
         try {
-            text = styledAttrs.getString(R.styleable.CustomView_customText) ?: text
-            number = styledAttrs.getInt(R.styleable.CustomView_customNumber, number)
-            size = styledAttrs.getDimension(R.styleable.CustomView_customSize, size)
+            customText = styledAttrs.getString(R.styleable.CustomView_customText) ?: customText
+            customNumber = styledAttrs.getInt(R.styleable.CustomView_customNumber, customNumber)
+            customSize = styledAttrs.getDimension(R.styleable.CustomView_customSize, customSize)
         } finally {
             styledAttrs.recycle()
         }
