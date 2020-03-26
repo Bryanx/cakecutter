@@ -64,7 +64,17 @@ fun bind(view: CustomView) {
   }
 }
 ```
-
+## Install
+Add these dependencies in your app's `build.gradle` file:
+```groovy
+implementation 'nl.bryanderidder.cakecutter:annotations:0.2.1'
+kapt 'nl.bryanderidder.cakecutter:compiler:0.2.1'
+```
+Use `annotationProcessor` instead of `kapt` for Java projects. \
+For kotlin projects add this to the top of your `build.gradle` file if it's not added yet:
+```groov
+apply plugin: "kotlin-kapt"
+```
 
 ## Note
 This project is more of an expirement/study on annotation libraries and [ButterKnife](https://github.com/JakeWharton/butterknife).
