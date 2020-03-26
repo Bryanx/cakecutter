@@ -8,9 +8,9 @@ ext {
     bintrayRepo = "cakecutter"
     bintrayName = "nl.bryanderidder.cakecutter"
 
-    publishedGroupId = 'nl.bryanderidder'
+    publishedGroupId = 'nl.bryanderidder.cakecutter'
     libraryName = 'cakecutter'
-    artifact = 'cakecutter'
+    artifact = 'annotations'
 
     libraryDescription = 'A tiny android annotation library for injecting styled attributes into custom views.'
 

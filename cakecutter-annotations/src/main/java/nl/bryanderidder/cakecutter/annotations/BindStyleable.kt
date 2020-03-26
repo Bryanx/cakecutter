@@ -9,4 +9,4 @@ package nl.bryanderidder.cakecutter.annotations
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.SOURCE)
-annotation class BindStyleable(val styleableId: Int)
+annotation class BindStyleable(val styleableId: String)

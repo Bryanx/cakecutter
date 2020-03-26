@@ -73,7 +73,7 @@ class StyleableProcessor : AbstractProcessor() {
             addStatement("  .apply {")
             addStatement("    try {")
             injections?.forEach { point: InjectionPoint ->
-                val id = if (point.styleId != null) "${point.styleId}"
+                val id = if (point.styleId != null) "R.styleable.${className}_${point.styleId}"
                 else "R.styleable.${className}_${point.variableName}"
                 addStatement("      ${fetchStyleable(point, id, point.type.toString())}")
             }
@@ -111,7 +111,7 @@ class StyleableProcessor : AbstractProcessor() {
         val variableName = element.simpleName.toString()
         val type = element.asType()
         val classElement = element.enclosingElement as TypeElement
-        var styleId: Int? = null
+        var styleId: String? = null
         try {
             styleId = element.getAnnotation(BindStyleable::class.java).styleableId
         } catch (e: Exception) { /* annotation not found. */}
@@ -128,7 +128,7 @@ class StyleableProcessor : AbstractProcessor() {
     private class InjectionPoint internal constructor(
         val variableName: String,
         val type: TypeMirror,
-        val styleId: Int?
+        val styleId: String?
     )
 
     companion object {

@@ -27,7 +27,7 @@ class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(c
             field = value
         }
     // this attribute allows you to use a different field name than the styleable.
-    @BindStyleable(styleableId = R.styleable.CustomView_viewVisible) var visible: Boolean = true
+    @BindStyleable("viewVisible") var visible: Boolean = true
 
     init {
         CakeCutter.bind(this)

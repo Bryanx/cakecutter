@@ -43,7 +43,7 @@ Some advantages:
 
 Alternative annotation:
 ```kotlin
-@BindStyleable(R.styleable.CustomView_customText) var otherTextName: String = ""
+@BindStyleable("customText") var otherTextName: String = ""
 ```
 With this annotation the props can have different names than the styleables.
 
