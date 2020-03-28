@@ -75,6 +75,7 @@ For kotlin projects add this to the top of your `build.gradle` file if it's not 
 ```groov
 apply plugin: "kotlin-kapt"
 ```
+After adding the annotations you have to rebuild the project to load the generated code.
 
 ## Note
 This project is more of an expirement/study on annotation libraries and [ButterKnife](https://github.com/JakeWharton/butterknife).
