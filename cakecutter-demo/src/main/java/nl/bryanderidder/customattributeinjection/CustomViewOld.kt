@@ -3,6 +3,7 @@ package nl.bryanderidder.customattributeinjection
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import java.lang.Integer.getInteger
 
@@ -14,6 +15,8 @@ import java.lang.Integer.getInteger
  * @author Bryan de Ridder
  */
 class CustomViewOld(ctx: Context, attrs: AttributeSet) : FrameLayout(ctx, attrs) {
+    val tvText: TextView = TextView(ctx).also(this::addView)
+
     var defaultText: String = "Hello"
     var defaultTextSize: Float = 20f
     var defaultPadding: Int = 30
@@ -26,7 +29,12 @@ class CustomViewOld(ctx: Context, attrs: AttributeSet) : FrameLayout(ctx, attrs)
     var customPadding: Int = defaultPadding
     var customPosition: PositionEnum = defaultPosition
     var customVisible: Boolean = defaultVisibility
+
     var customColor: Int = defaultColor
+        set(value) {
+            field = value
+            tvText.setTextColor(value)
+        }
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.CustomView)
