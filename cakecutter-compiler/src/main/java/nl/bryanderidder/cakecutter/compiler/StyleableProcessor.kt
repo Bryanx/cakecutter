@@ -62,7 +62,7 @@ class StyleableProcessor : AbstractProcessor() {
     ): String {
         val className = classElement.simpleName.toString()
         val func = StringBuilder()
-        func.appendln("fun $BIND(view: $classElement) {")
+        func.appendln("  fun $BIND(view: $classElement) {")
         func.appendln("    view.context.obtainStyledAttributes(view.attrs, R.styleable.$className)")
         func.appendln("    .apply {")
         func.appendln("      try {")
@@ -135,7 +135,7 @@ class StyleableProcessor : AbstractProcessor() {
 package %s
 
 object $OBJECT_NAME {
-  %s}
+%s}
 """
     }
 }
