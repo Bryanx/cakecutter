@@ -8,7 +8,7 @@ import java.lang.Integer.getInteger
 
 
 /**
- * §
+ * 
  * The traditional way of loading styled attributes
  *
  * @author Bryan de Ridder
