@@ -11,25 +11,36 @@ import nl.bryanderidder.cakecutter.annotations.Styleable
 
 
 /**
- * BindStyleable retrieves the value from the layout and applies it to the setter.
+ *
+ * Bind your styleables to fields using generated code.
+ * /@Styleable var viewText corresponds to [R.styleable.CustomView_viewText]
+ *
+ * Steps:
+ * Set the access modifier of attributeset to internal
+ * Add some annotated fields and name them the same as your styleables in [attrs.xml]
+ * call CakeCutter.bind(this) in init()
+ * Rebuild your project.
  *
  * @author Bryan de Ridder
  */
 class CustomView(ctx: Context, internal val attrs: AttributeSet) : FrameLayout(ctx, attrs) {
     val tvText: TextView = TextView(ctx).also(this::addView)
-    @Styleable var viewText: String = ""
-    @Styleable var viewTextSize: Float = 30f
-    @Styleable var viewPadding: Int = 30
-    @Styleable var viewPosition: PositionEnum = PositionEnum.LEFT
-    @Styleable var viewColor: Int = ContextCompat.getColor(ctx, android.R.color.white)
+    @Styleable var customText: String = ""
+    @Styleable var customTextSize: Float = 30f
+    @Styleable var customPadding: Int = 30
+    @Styleable var customPosition: PositionEnum = PositionEnum.LEFT
+    @BindStyleable("customVisible") var visible: Boolean = true
+
+    // Example with a setter. This setter is called initially by the layout.
+    @Styleable var customColor: Int = ContextCompat.getColor(ctx, android.R.color.white)
         set(value) {
-            tvText.setTextColor(value)
             field = value
+            tvText.setTextColor(value)
+            // invalidate()
+            // requestLayout()
         }
-    // this attribute allows you to use a different field name than the styleable.
-    @BindStyleable("viewVisible") var visible: Boolean = true
 
     init {
-        CakeCutter.bind(this)
+        CakeCutter.bind(this) // call this and set [attrs] to internal
     }
 }

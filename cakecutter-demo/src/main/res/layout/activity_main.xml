@@ -12,8 +12,8 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:background="@color/colorAccent"
-        app:viewText="test"
-        app:viewPadding="0"
-        app:viewPosition="right"/>
+        app:customText="test"
+        app:customPadding="0"
+        app:customPosition="right"/>
 
 </LinearLayout>

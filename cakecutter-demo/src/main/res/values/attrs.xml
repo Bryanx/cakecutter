@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="CustomView">
-        <attr name="viewText" format="string"/>
-        <attr name="viewTextSize" format="dimension"/>
-        <attr name="viewPadding" format="integer"/>
-        <attr name="viewVisible" format="boolean"/>
-        <attr name="viewColor" format="color"/>
-        <attr name="viewPosition" format="enum">
+        <attr name="customText" format="string"/>
+        <attr name="customTextSize" format="dimension"/>
+        <attr name="customPadding" format="integer"/>
+        <attr name="customVisible" format="boolean"/>
+        <attr name="customColor" format="color"/>
+        <attr name="customPosition" format="enum">
             <enum name="left" value="0"/>
             <enum name="right" value="1"/>
         </attr>

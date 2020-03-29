@@ -3,12 +3,13 @@ package nl.bryanderidder.customattributeinjection
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import android.widget.TextView
+import androidx.core.content.ContextCompat
+import java.lang.Integer.getInteger
 
 
 /**
- * Example how to create a layout custom attribute and a programmatic setter
- * At the moment these are separated.
+ * §
+ * The traditional way of loading styled attributes
  *
  * @author Bryan de Ridder
  */
@@ -17,18 +18,32 @@ class CustomViewOld(ctx: Context, attrs: AttributeSet) : FrameLayout(ctx, attrs)
     var defaultTextSize: Float = 20f
     var defaultPadding: Int = 30
     var defaultVisibility: Boolean = true
-    var text: String = defaultText
-    var textSize: Float = defaultTextSize
-    var textPadding: Int = defaultPadding
-    var textVisibility: Boolean = true
+    var defaultPosition: PositionEnum = PositionEnum.LEFT
+    var defaultColor: Int = ContextCompat.getColor(ctx, android.R.color.white)
+
+    var customText: String = defaultText
+    var customTextSize: Float = defaultTextSize
+    var customPadding: Int = defaultPadding
+    var customPosition: PositionEnum = defaultPosition
+    var customVisible: Boolean = defaultVisibility
+    var customColor: Int = defaultColor
 
     init {
-        val styledAttrs = ctx.obtainStyledAttributes(attrs, R.styleable.CustomView)
-        text = styledAttrs.getString(R.styleable.CustomView_viewText) ?: defaultText
-        textSize = styledAttrs.getDimension(R.styleable.CustomView_viewTextSize, defaultTextSize)
-        textPadding = styledAttrs.getInt(R.styleable.CustomView_viewPadding, defaultPadding)
-        textVisibility = styledAttrs.getBoolean(R.styleable.CustomView_viewVisible, defaultVisibility)
-        styledAttrs.recycle()
+        context.obtainStyledAttributes(attrs, R.styleable.CustomView)
+            .apply {
+                try {
+                    customVisible = getBoolean(R.styleable.CustomView_customVisible, customVisible)
+                    customText = getString(R.styleable.CustomView_customText) ?: defaultText
+                    customTextSize = getDimension(R.styleable.CustomView_customTextSize, defaultTextSize)
+                    customPadding = getInt(R.styleable.CustomView_customPadding, defaultPadding)
+                    customPosition = PositionEnum.values()[getInteger(
+                        R.styleable.CustomView_customPosition,
+                        defaultPosition.ordinal
+                    )]
+                    customColor = getInt(R.styleable.CustomView_customColor, defaultColor)
+                } finally {
+                    recycle()
+                }
+            }
     }
-
 }
