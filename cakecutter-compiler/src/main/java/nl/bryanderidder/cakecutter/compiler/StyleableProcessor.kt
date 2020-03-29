@@ -36,11 +36,11 @@ class StyleableProcessor : AbstractProcessor() {
         if (injections.isEmpty()) return false
         val packageName = injections.keys.first().toString().replaceAfterLast(".", "").dropLastWhile { it == '.' }
         val content = StringBuilder()
-        // fill the object with bind functions for each view
+        // fill the object with a bind function
         injections.keys.forEach {
             content.appendln(generateBindFunction(it, injections[it]))
         }
-        // Put files in generated directory
+        // Put the files in generated directory
         generateFile(packageName, content.toString())
         return false
     }
