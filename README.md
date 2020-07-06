@@ -49,7 +49,7 @@ With this annotation the props can have different names than the styleables.
 
 
 ## Generated code
-It works similarly to Dagger and ButterKnife, here is the generated code for above example:
+It works similarly to [Dagger](https://github.com/google/dagger) and [ButterKnife](https://github.com/JakeWharton/butterknife), here is the generated code for above example:
 ```kotlin
 fun bind(view: CustomView) {
   view.context.obtainStyledAttributes(view.attrs, R.styleable.CustomView)
